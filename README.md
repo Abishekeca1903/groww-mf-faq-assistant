@@ -143,3 +143,41 @@ Run `pytest -q` and `python -m py_compile app.py`. The included policy tests cov
 - TER, SIP minimum, exit load and riskometer values can change; use the latest factsheet, SID, KIM or addendum and note its publication/as-of date.
 - No return calculations, rankings, personalized recommendations, account access or transactions are implemented.
 - This is an educational prototype, not a production financial-information service.
+
+
+## Run and deploy the working prototype
+
+### Local run
+
+1. Install Python 3.10 or newer.
+2. Run `pip install -r requirements.txt`.
+3. Copy `.env.example` to `.env` and add your own OpenAI API key.
+4. Run `streamlit run app.py`.
+
+### Public hosting with Streamlit Community Cloud
+
+1. Sign in at https://share.streamlit.io/ using the GitHub account that owns this repository.
+2. Select **Create app** and choose **Yup, I have an app**.
+3. Repository: `Abishekeca1903/groww-mf-faq-assistant`
+4. Branch: `main`
+5. Main file path: `app.py`
+6. In **Advanced settings → Secrets**, add:
+
+```toml
+OPENAI_API_KEY = "your_openai_api_key"
+OPENAI_MODEL = "gpt-4o-mini"
+```
+
+7. Click **Deploy**. Streamlit will assign a public `streamlit.app` URL after deployment completes. Add that actual URL to the milestone submission after confirming the app opens and answers a test question.
+
+Official instructions: https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy
+
+## Project files
+
+- [Source inventory CSV](data/sources.csv)
+- [Separate sample Q&A](sample_qa/sample_qa.md)
+- [System prompt](prompts/system_prompt.txt)
+- [Application](app.py)
+- [Safety policy](policy.py)
+- [Policy tests](tests/test_policy.py)
+
