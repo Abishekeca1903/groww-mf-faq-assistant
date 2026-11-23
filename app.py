@@ -285,7 +285,19 @@ if test_api:
         except PermissionDeniedError as exc:
             st.error(f"The key was recognized, but the project/key may not have permission for the selected model or endpoint. Check API project permissions. ({getattr(exc, 'status_code', 'permission error')})")
         except RateLimitError as exc:
-            st.error("OpenAI returned a rate/quota error (HTTP 429). Check API usage, rate limits and billing at https://platform.openai.com/usage.")
+            body = getattr(exc, "body", None)
+            detail = body.get("error", {}) if isinstance(body, dict) else {}
+            code = getattr(exc, "code", None) or (detail.get("code") if isinstance(detail, dict) else None)
+            if code == "credit_balance_exhausted":
+                st.error("OpenAI API prepaid credits are exhausted. Open Billing → Overview and add API credits, then wait a few minutes and test again.")
+            elif code in ("project_spend_limit_exceeded", "organization_spend_limit_exceeded"):
+                st.error(f"OpenAI hard spending limit reached ({code}). Review the matching project or organization spending limit and raise it only if you approve the extra spend.")
+            elif code == "organization_usage_limit_exceeded":
+                st.error("The organization reached its OpenAI-assigned usage limit. Review the organization Limits page; adding prepaid credits alone will not fix this limit.")
+            elif code in ("rate_limit_exceeded", "requests", "tokens"):
+                st.error("OpenAI request/token rate limit reached. Reduce parallel requests and retry with backoff; this is different from exhausted credits.")
+            else:
+                st.error(f"OpenAI returned HTTP 429 (quota/rate limit). Error code: {code or 'not provided'}. Check Billing Overview, Usage and Organization Limits.")
             if getattr(exc, "request_id", None):
                 st.caption(f"OpenAI request ID: {exc.request_id}")
         except Exception as exc:
@@ -326,7 +338,19 @@ if ask:
                 if getattr(exc, "request_id", None):
                     st.caption(f"OpenAI request ID: {exc.request_id}")
             except RateLimitError as exc:
-                st.error("OpenAI returned HTTP 429. Check usage limits, rate limits and billing at https://platform.openai.com/usage. This is different from an invalid-key authentication error.")
+                body = getattr(exc, "body", None)
+                detail = body.get("error", {}) if isinstance(body, dict) else {}
+                code = getattr(exc, "code", None) or (detail.get("code") if isinstance(detail, dict) else None)
+                if code == "credit_balance_exhausted":
+                    st.error("Your OpenAI API credit balance is empty. Add credits in Billing Overview, wait a few minutes, then click Test API key again.")
+                elif code in ("project_spend_limit_exceeded", "organization_spend_limit_exceeded"):
+                    st.error(f"Your configured hard spending limit was reached ({code}). Review the matching project/organization spending limit.")
+                elif code == "organization_usage_limit_exceeded":
+                    st.error("Your organization reached its OpenAI-assigned usage limit. Review Organization Limits or contact your organization owner.")
+                elif code in ("rate_limit_exceeded", "requests", "tokens"):
+                    st.error("A request/token rate limit was reached. Reduce request frequency and retry after the required delay.")
+                else:
+                    st.error(f"OpenAI returned HTTP 429. Error code: {code or 'not provided'}. Check Billing Overview, Usage and Organization Limits.")
                 if getattr(exc, "request_id", None):
                     st.caption(f"OpenAI request ID: {exc.request_id}")
             except APIConnectionError:
