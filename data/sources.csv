@@ -1,0 +1,23 @@
+source_id,title,source_type,url,publisher,intended_use
+S01,HDFC Large Cap Fund - Regular Plan,Scheme page,https://www.hdfcfund.com/explore/mutual-funds/hdfc-large-cap-fund/regular,HDFC AMC,"Scheme objective, riskometer, benchmark, exit load, SID/KIM"
+S02,HDFC Large Cap Fund - Direct Plan,Scheme page,https://www.hdfcfund.com/explore/mutual-funds/hdfc-large-cap-fund/direct,HDFC AMC,"Minimum SIP, TER, riskometer, exit load"
+S03,HDFC Flexi Cap Fund - Direct Plan,Scheme page,https://www.hdfcfund.com/explore/mutual-funds/hdfc-flexi-cap-fund/direct,HDFC AMC,"Scheme category, exit load, riskometer, FAQ"
+S04,HDFC ELSS Tax Saver Fund - Regular Plan,Scheme page,https://www.hdfcfund.com/explore/mutual-funds/hdfc-elss-tax-saver-fund/regular,HDFC AMC,ELSS lock-in and scheme information
+S05,HDFC Nifty 50 Index Fund - Regular Plan,Scheme page,https://www.hdfcfund.com/explore/mutual-funds/hdfc-nifty-50-index-fund/regular,HDFC AMC,"Benchmark, riskometer, exit load, scheme documents"
+S06,HDFC Nifty 50 Index Fund - Direct Plan,Scheme page,https://www.hdfcfund.com/explore/mutual-funds/hdfc-nifty-50-index-fund/direct,HDFC AMC,"Scheme details, benchmark, exit load"
+S07,HDFC Mutual Fund Factsheets,Factsheet index,https://www.hdfcfund.com/mutual-funds/factsheets,HDFC AMC,"Monthly factsheets, holdings, ratios, riskometer"
+S08,HDFC SIP FAQs,AMC FAQ,https://www.hdfcfund.com/services/faqs/systematic-investment-plan,HDFC AMC,"SIP instalments, tenure and ELSS lock-in context"
+S09,HDFC MF Factsheet - September 2026,PDF factsheet,https://files.hdfcfund.com/s3fs-public/2026-10/HDFC%20MF%20Factsheet%20-%20September%202026.pdf,HDFC AMC,"Scheme-level expense ratios, benchmarks and riskometers"
+S10,HDFC MF Index Factsheet - September 2026,PDF factsheet,https://files.hdfcfund.com/s3fs-public/2026-10/HDFC%20MF%20Index%20Factsheet%20-%20September%202026.pdf,HDFC AMC,"Index scheme TER, benchmark and exit load"
+S11,HDFC ELSS Tax Saver Fund Facts - October 2026,PDF fund facts,https://files.hdfcfund.com/s3fs-public/Others/2026-10/Fund%20Facts%20-%20HDFC%20ELSS%20-%20Tax%20Saver%20Fund.pdf,HDFC AMC,"ELSS benchmark, exit load and fund facts"
+S12,HDFC Statement of Additional Information and Addendum,PDF statutory document,https://files.hdfcfund.com/s3fs-public/2026-10/SAI%20with%20updated%20Addendum%20dated%20September%2030%2C%202026_0.pdf,HDFC AMC,Scheme-specific SIP minimums and conditions
+S13,SEBI - Understanding the Riskometer,Investor education,https://investor.sebi.gov.in/riskometer.html,SEBI,Meaning and levels of the mutual fund riskometer
+S14,SEBI Circular - Riskometer and portfolio disclosure,Regulatory circular,https://www.sebi.gov.in/web/?file=https%3A%2F%2Fwww.sebi.gov.in%2Fsebi_data%2Fattachdocs%2Fapr-2021%2F1619691350204.pdf,SEBI,Riskometer and benchmark disclosure requirements
+S15,SEBI Investor - Consolidated Account Statement,Investor education,https://investor.sebi.gov.in/consolidated_account_statement.html,SEBI,CAS definition and investor information
+S16,AMFI - Download CAS,Investor service,https://www.amfiindia.com/online-center/download-cas,AMFI,"e-CAS request options through CAMS, KFintech and MFCentral"
+S17,AMFI - Consolidated Account Statement,Investor FAQ,https://www.amfiindia.com/investor/become-mf-distributor?zoneName=consolidatedAcct,AMFI,"CAS contents, issue timing and eligibility"
+S18,AMFI - Investor Service FAQs,Investor FAQ,https://www.amfiindia.com/investor/become-mf-distributor?zoneName=InvestorService,AMFI,Account statement and folio definitions
+S19,HDFC Mutual Fund - Request Statement,AMC investor service,https://www.hdfcfund.com/services/additional-info/request-statement,HDFC AMC,"Account, dividend, exit load and capital gains statements"
+S20,HDFC Mutual Fund - Download Consolidated Account Statement,AMC investor service,https://www.hdfcfund.com/services/consolidated-account-statement,HDFC AMC,Account statement availability and download guidance
+S21,HDFC Mutual Fund - Capital Gains Statement Guide,AMC educational guide,https://www.hdfcfund.com/learn/blog/how-get-capital-gain-statement-mutual-fund-schemes-india,HDFC AMC,"Official guidance for obtaining capital gains statements"
+S22,HDFC Flexi Cap Fund Factsheet - August 2026,PDF factsheet,https://files.hdfcfund.com/s3fs-public/2026-09/HDFC%20MF%20Factsheet%20-%20August%202026.pdf,HDFC AMC,"Flexi Cap scheme details and riskometer"
