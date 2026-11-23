@@ -11,7 +11,7 @@ import requests
 import streamlit as st
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
-from openai import OpenAI
+from openai import OpenAI, AuthenticationError, PermissionDeniedError, RateLimitError, APIConnectionError
 from pypdf import PdfReader
 
 from policy import is_advice_or_performance, looks_like_pii
@@ -19,8 +19,19 @@ from policy import is_advice_or_performance, looks_like_pii
 load_dotenv()
 ROOT = Path(__file__).parent
 SOURCES_FILE = ROOT / "data" / "sources.csv"
-MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+DEFAULT_MODEL = "gpt-4o-mini"
 EMBEDDING_MODEL = "text-embedding-3-small"
+
+
+def get_model() -> str:
+    try:
+        configured = str(st.secrets.get("OPENAI_MODEL", "")).strip()
+        if configured:
+            return configured
+    except Exception:
+        pass
+    return os.getenv("OPENAI_MODEL", DEFAULT_MODEL).strip() or DEFAULT_MODEL
+
 MAX_ANSWER_SENTENCES = 2
 
 st.set_page_config(page_title="Groww | Mutual Fund Facts Assistant", page_icon="📘", layout="centered")
@@ -39,13 +50,14 @@ EXAMPLES = [
 
 
 def get_api_key() -> str:
-    key = os.getenv("OPENAI_API_KEY", "").strip()
-    if key:
-        return key
+    # Prefer Streamlit Cloud Secrets; fall back to the local .env environment.
     try:
-        return str(st.secrets.get("OPENAI_API_KEY", "")).strip()
+        key = str(st.secrets.get("OPENAI_API_KEY", "")).strip()
+        if key:
+            return key
     except Exception:
-        return ""
+        pass
+    return os.getenv("OPENAI_API_KEY", "").strip()
 
 
 def source_rows():
@@ -212,7 +224,7 @@ def answer_question(question, corpus):
         for item in evidence
     )
     completion = corpus["client"].chat.completions.create(
-        model=MODEL,
+        model=get_model(),
         temperature=0,
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
@@ -244,11 +256,40 @@ st.text_input(
     placeholder="e.g. What is the benchmark of HDFC Nifty 50 Index Fund?",
 )
 
-ask_col, refresh_col = st.columns(2)
+ask_col, refresh_col, test_col = st.columns(3)
 with ask_col:
     ask = st.button("Get factual answer", type="primary", use_container_width=True)
 with refresh_col:
-    refresh = st.button("Refresh official sources", use_container_width=True)
+    refresh = st.button("Refresh sources", use_container_width=True)
+with test_col:
+    test_api = st.button("Test API key", use_container_width=True)
+
+if test_api:
+    api_key = get_api_key()
+    if not api_key:
+        st.error("No API key found. Add OPENAI_API_KEY to Streamlit Cloud → App settings → Secrets, or to your local .env file.")
+    else:
+        try:
+            test_client = OpenAI(api_key=api_key)
+            test_client.embeddings.create(model=EMBEDDING_MODEL, input="Mutual fund FAQ API key check")
+            test_client.chat.completions.create(
+                model=get_model(),
+                messages=[{"role": "user", "content": "Reply with OK only."}],
+                max_tokens=5,
+            )
+            st.success(f"OpenAI authentication and model access succeeded ({get_model()}).")
+        except AuthenticationError as exc:
+            st.error("OpenAI rejected this API key (HTTP 401). Create a new key at https://platform.openai.com/api-keys, replace OPENAI_API_KEY in Streamlit App settings → Secrets, save, then reboot the app.")
+            if getattr(exc, "request_id", None):
+                st.caption(f"OpenAI request ID: {exc.request_id}")
+        except PermissionDeniedError as exc:
+            st.error(f"The key was recognized, but the project/key may not have permission for the selected model or endpoint. Check API project permissions. ({getattr(exc, 'status_code', 'permission error')})")
+        except RateLimitError as exc:
+            st.error("OpenAI returned a rate/quota error (HTTP 429). Check API usage, rate limits and billing at https://platform.openai.com/usage.")
+            if getattr(exc, "request_id", None):
+                st.caption(f"OpenAI request ID: {exc.request_id}")
+        except Exception as exc:
+            st.error(f"OpenAI test failed: {type(exc).__name__}. Check the model name and OpenAI Platform project settings.")
 
 if refresh:
     build_corpus.clear()
@@ -276,8 +317,22 @@ if ask:
                 if corpus["failures"]:
                     with st.expander("Sources that could not be loaded"):
                         st.write("\n".join(corpus["failures"]))
+            except AuthenticationError as exc:
+                st.error("OpenAI rejected the configured API key (HTTP 401). Go to Streamlit Cloud → your app → Settings → Secrets, replace OPENAI_API_KEY with a new active key from https://platform.openai.com/api-keys, save, then reboot the app.")
+                if getattr(exc, "request_id", None):
+                    st.caption(f"OpenAI request ID: {exc.request_id}")
+            except PermissionDeniedError as exc:
+                st.error("OpenAI authenticated the key but denied access to this model or endpoint. Check the API key's project permissions and model access.")
+                if getattr(exc, "request_id", None):
+                    st.caption(f"OpenAI request ID: {exc.request_id}")
+            except RateLimitError as exc:
+                st.error("OpenAI returned HTTP 429. Check usage limits, rate limits and billing at https://platform.openai.com/usage. This is different from an invalid-key authentication error.")
+                if getattr(exc, "request_id", None):
+                    st.caption(f"OpenAI request ID: {exc.request_id}")
+            except APIConnectionError:
+                st.error("The app could not connect to OpenAI. Check the deployment network and try again.")
             except Exception as exc:
-                st.error(f"The assistant could not complete this request: {type(exc).__name__}. Check API billing, source availability and deployment logs.")
+                st.error(f"The assistant could not complete this request: {type(exc).__name__}. Check source availability and Streamlit deployment logs.")
 
 st.divider()
 st.caption(
